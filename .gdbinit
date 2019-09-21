@@ -285,6 +285,9 @@ def format_value(value, compact=None):
         out = out[0:R.max_value_length] + ansi(R.value_truncation_string, R.style_critical)
     return out
 
+def format_path(path):
+    return re.sub(r"^" + re.escape(os.path.expanduser('~')), '~', path)
+
 # XXX parsing the output of `info breakpoints` is apparently the best option
 # right now, see: https://sourceware.org/bugzilla/show_bug.cgi?id=18385
 def fetch_breakpoints(watchpoints=False, pending=False):
@@ -1579,7 +1582,7 @@ Optionally list the frame arguments and locals too.'''
             info += ' in {}+{}'.format(name, offset)
         sal = frame.find_sal()
         if sal and sal.symtab:
-            file_name = ansi(sal.symtab.filename, style)
+            file_name = ansi(format_path(sal.symtab.filename), style)
             file_line = ansi(str(sal.line), style)
             info += ' at {}:{}'.format(file_name, file_line)
         return info
